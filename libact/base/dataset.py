@@ -198,7 +198,7 @@ class Dataset(object):
         """
         return self._X[ self.get_labeled_mask() ], self._y[ self.get_labeled_mask() ].tolist()
 
-    def get_unlabeled_entries(self): # TODO: change interface
+    def get_unlabeled_entries(self):
         """
         Returns list of unlabeled features, along with their entry_ids
 
