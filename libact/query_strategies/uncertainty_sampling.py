@@ -119,11 +119,16 @@ class UncertaintySampling(QueryStrategy):
         return zip(unlabeled_entry_ids, score)
 
 
-    def make_query(self, return_score=False):
+    def make_query(self, n_ask=1, return_score=False):
         """Return the index of the sample to be queried and labeled and
         selection score of each sample. Read-only.
 
         No modification to the internal states.
+
+        Parameters
+        ----------
+        n_ask : int
+            Number of query asking
 
         Returns
         -------
@@ -138,7 +143,9 @@ class UncertaintySampling(QueryStrategy):
         # unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
 
         unlabeled_entry_ids, scores = zip(*self._get_scores())
-        ask_id = np.argmax(scores)
+        ask_id = np.argsort(scores)[::-1][:n_ask]
+        if n_ask == 1:
+            ask_id = ask_id[0]
 
         if return_score:
             return unlabeled_entry_ids[ask_id], \

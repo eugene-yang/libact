@@ -1,5 +1,6 @@
 """Random Sampling
 """
+import numpy as np
 from libact.base.interfaces import QueryStrategy
 from libact.utils import inherit_docstring_from, seed_random_state, zip
 
@@ -43,9 +44,10 @@ class RandomSampling(QueryStrategy):
         self.random_state_ = seed_random_state(random_state)
 
     @inherit_docstring_from(QueryStrategy)
-    def make_query(self):
+    def make_query(self, n_ask=1):
         dataset = self.dataset
         unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
-        entry_id = unlabeled_entry_ids[
-            self.random_state_.randint(0, len(unlabeled_entry_ids))]
-        return entry_id
+        entry_id = np.array(unlabeled_entry_ids)[
+            self.random_state_.choice(len(unlabeled_entry_ids), n_ask)
+        ]
+        return entry_id if n_ask > 1 else entry_id[0]
