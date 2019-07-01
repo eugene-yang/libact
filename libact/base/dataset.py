@@ -10,6 +10,8 @@ import random
 import numpy as np
 import scipy.sparse as sp
 
+import copy
+
 from libact.utils import zip
 
 
@@ -63,6 +65,8 @@ class Dataset(object):
     
     @property
     def data(self): return self
+
+    def copy(self): return copy.deepcopy(self)
 
     def get_labeled_mask(self):
         """
