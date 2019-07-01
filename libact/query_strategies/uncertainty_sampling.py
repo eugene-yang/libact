@@ -143,6 +143,7 @@ class UncertaintySampling(QueryStrategy):
         # unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
 
         unlabeled_entry_ids, scores = zip(*self._get_scores())
+        unlabeled_entry_ids = np.array(unlabeled_entry_ids)
         ask_id = np.argsort(scores)[::-1][:n_ask]
         if n_ask == 1:
             ask_id = ask_id[0]
