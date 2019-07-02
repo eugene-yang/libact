@@ -66,7 +66,10 @@ class Dataset(object):
     @property
     def data(self): return self
 
-    def copy(self): return copy.deepcopy(self)
+    def copy(self): 
+        d = Dataset( self._X.copy(), self._y.copy() )
+        d._update_callback = copy.deepcopy( self._update_callback )
+        return d
 
     def get_labeled_mask(self):
         """
