@@ -70,12 +70,12 @@ def main():
 
     # Comparing UncertaintySampling strategy with RandomSampling.
     # model is the base learner, e.g. LogisticRegression, SVM ... etc.
-    qs = UncertaintySampling(trn_ds, method='lc', model=LogisticRegression())
-    model = LogisticRegression()
+    qs = UncertaintySampling(trn_ds, method='lc', model=SVM())
+    model = SVM()
     E_in_1, E_out_1 = run(trn_ds, tst_ds, lbr, model, qs, quota)
 
     qs2 = RandomSampling(trn_ds2)
-    model = LogisticRegression()
+    model = SVM()
     E_in_2, E_out_2 = run(trn_ds2, tst_ds, lbr, model, qs2, quota)
 
     # Plot the learning curve of UncertaintySampling to RandomSampling

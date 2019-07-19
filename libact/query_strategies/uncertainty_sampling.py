@@ -95,9 +95,10 @@ class UncertaintySampling(QueryStrategy):
                 "method 'entropy' requires model to be a ProbabilisticModel"
             )
 
-    def _get_scores(self):
+    def _get_scores(self, retrain=True, *args, **kwargs):
         dataset = self.dataset
-        self.model.train(dataset)
+        if retrain:
+            self.model.train(dataset, *args, **kwargs)
         unlabeled_entry_ids, X_pool = dataset.get_unlabeled_entries()
 
         if isinstance(self.model, ProbabilisticModel):
@@ -119,7 +120,7 @@ class UncertaintySampling(QueryStrategy):
         return zip(unlabeled_entry_ids, score)
 
 
-    def make_query(self, n_ask=1, return_score=False):
+    def make_query(self, n_ask=1, return_score=False, retrain=True, *args, **kwargs):
         """Return the index of the sample to be queried and labeled and
         selection score of each sample. Read-only.
 
@@ -142,7 +143,7 @@ class UncertaintySampling(QueryStrategy):
         dataset = self.dataset
         # unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
 
-        unlabeled_entry_ids, scores = zip(*self._get_scores())
+        unlabeled_entry_ids, scores = zip(*self._get_scores( retrain=retrain, *args, **kwargs))
         unlabeled_entry_ids = np.array(unlabeled_entry_ids)
         ask_id = np.argsort(scores)[::-1][:n_ask]
         if n_ask == 1:
