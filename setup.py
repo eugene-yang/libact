@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from io import open # python 2 compatibility
 import os
 from os.path import join
 from setuptools import setup, Extension
@@ -112,9 +113,9 @@ else:
 
 setup(
     name='libact',
-    version='0.1.4',
+    version='0.1.6',
     description='Pool-based active learning in Python',
-    long_description=open('README.md').read(),
+    long_description=open('README.md', 'r', newline='', encoding='utf-8').read(),
     long_description_content_type="text/markdown",
     author='Y.-Y. Yang, S.-C. Lee, Y.-A. Chung, T.-E. Wu, H.-T. Lin',
     author_email='b01902066@csie.ntu.edu.tw, b01902010@csie.ntu.edu.tw, '
