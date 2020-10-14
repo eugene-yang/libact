@@ -63,6 +63,31 @@ class QueryStrategy(with_metaclass(ABCMeta, object)):
         """
         pass
 
+class BatchQueryStrategy(QueryStrategy):
+
+    """Pool-based query strategy in batch
+
+    A BatchQueryStrategy advices on which set of unlabeled data to be queried
+    next given a pool of labeled and unlabeled data.
+    """
+    @abstractmethod
+    def make_query(self, n_ask=1):
+        """Return the indices of the sample to be queried and labeled. Read-only.
+
+        No modification to the internal states.
+
+        Parameters
+        ----------
+        n_ask : int
+            Number of sampling made. 
+        
+        Returns
+        -------
+        ask_id : list of int
+            The indice of the set of unlabeled sample to be queried and labeled.
+        """
+        pass
+
 
 class Labeler(with_metaclass(ABCMeta, object)):
 

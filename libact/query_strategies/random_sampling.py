@@ -1,11 +1,11 @@
 """Random Sampling
 """
 import numpy as np
-from libact.base.interfaces import QueryStrategy
+from libact.base.interfaces import BatchQueryStrategy
 from libact.utils import inherit_docstring_from, seed_random_state, zip
 
 
-class RandomSampling(QueryStrategy):
+class RandomSampling(BatchQueryStrategy):
 
     r"""Random sampling
 
@@ -43,7 +43,7 @@ class RandomSampling(QueryStrategy):
         random_state = kwargs.pop('random_state', None)
         self.random_state_ = seed_random_state(random_state)
 
-    @inherit_docstring_from(QueryStrategy)
+    @inherit_docstring_from(BatchQueryStrategy)
     def make_query(self, n_ask=1):
         dataset = self.dataset
         unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()

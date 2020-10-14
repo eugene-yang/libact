@@ -7,12 +7,12 @@ smallest margin method (margin sampling).
 """
 import numpy as np
 
-from libact.base.interfaces import QueryStrategy, ContinuousModel, \
+from libact.base.interfaces import BatchQueryStrategy, ContinuousModel, \
     ProbabilisticModel
 from libact.utils import inherit_docstring_from, zip
 
 
-class UncertaintySampling(QueryStrategy):
+class UncertaintySampling(BatchQueryStrategy):
 
     """Uncertainty Sampling
 
@@ -140,10 +140,10 @@ class UncertaintySampling(QueryStrategy):
             Selection score of unlabled entries, the larger the better.
 
         """
-        dataset = self.dataset
+        # dataset = self.dataset
         # unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
 
-        unlabeled_entry_ids, scores = zip(*self._get_scores( retrain=retrain, *args, **kwargs))
+        unlabeled_entry_ids, scores = zip(*self._get_scores(retrain=retrain, *args, **kwargs))
         unlabeled_entry_ids = np.array(unlabeled_entry_ids)
         ask_id = np.argsort(scores)[::-1][:n_ask]
         if n_ask == 1:
