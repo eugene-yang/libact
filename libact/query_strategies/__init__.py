@@ -10,6 +10,7 @@ LOGGER = logging.getLogger(__name__)
 
 from .active_learning_by_learning import ActiveLearningByLearning
 from .uncertainty_sampling import UncertaintySampling
+from .relevance_feedback import RelevanceFeedbackSampling
 from .query_by_committee import QueryByCommittee
 from .quire import QUIRE
 from .random_sampling import RandomSampling
@@ -43,6 +44,7 @@ __all__ = [
     'QUIRE',
     'QueryByCommittee',
     'RandomSampling',
+    'RelevanceFeedbackSampling',
     'UncertaintySampling',
     'VarianceReduction',
     'DensityWeightedMeta',
