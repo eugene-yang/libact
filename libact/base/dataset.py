@@ -36,7 +36,8 @@ class Dataset(object):
     """
 
     def __init__(self, X=None, y=None):
-        if X is None: X = np.array([])
+        if X is None: 
+            X = np.array([])
         elif not isinstance(X, sp.csr_matrix):
             X = np.array(X)
 
@@ -46,6 +47,7 @@ class Dataset(object):
         self._X = X
         self._y = y
         self.modified = True
+        self._labeled_mask = np.zeros(y.shape, dtype=bool)
         self._update_callback = set()
 
     def __len__(self):
@@ -63,7 +65,8 @@ class Dataset(object):
         return self._X[idx], self._y[idx]
 
     @property
-    def data(self): return self
+    def data(self): 
+        return self
 
     def copy(self): 
         d = Dataset( self._X.copy(), self._y.copy() )
@@ -78,7 +81,8 @@ class Dataset(object):
         -------
         mask: numpy array of bool, shape = (n_sample, )
         """
-        return ~np.fromiter((e is None for e in self._y), dtype=bool)
+        return self._labeled_mask.copy()
+        # return ~np.fromiter((e is None for e in self._y), dtype=bool)
 
     def len_labeled(self):
         """
@@ -150,6 +154,7 @@ class Dataset(object):
             Label of the sample to be update.
         """
         self._y[entry_id] = new_label
+        self._labeled_mask[entry_id] = True
         self.modified = True
         for callback in self._update_callback:
             callback(entry_id, new_label)
@@ -203,6 +208,17 @@ class Dataset(object):
         y: list, shape = (n_samples lebaled)
         """
         return self._X[self.get_labeled_mask()], self._y[self.get_labeled_mask()].tolist()
+
+    def get_unlabeled_idx(self):
+        """
+        Returns list of unlabeled entry_ids
+
+        Returns
+        -------
+        idx: numpy array, shape = (n_samples unlebaled)
+        X: numpy array or scipy matrix, shape = ( n_sample unlabeled, n_features )
+        """
+        return np.where(~self.get_labeled_mask())[0]
 
     def get_unlabeled_entries(self):
         """
