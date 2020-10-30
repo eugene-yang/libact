@@ -58,7 +58,7 @@ class Dataset(object):
         -------
         n_samples : int
         """
-        return self._X.shape[0]
+        return self._y.shape[0]
 
     def __getitem__(self, idx):
         # still provide the interface to direct access the data by index
