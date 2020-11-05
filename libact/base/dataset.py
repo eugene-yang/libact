@@ -41,13 +41,19 @@ class Dataset(object):
         elif not isinstance(X, sp.csr_matrix):
             X = np.array(X)
 
-        if y is None: y = []
-        y = np.array(y)
+        if y is None: 
+            y = np.array([None]*X.shape[0])
+        else:
+            y = np.array(y)
+
+        assert y.shape[0] == X.shape[0]
 
         self._X = X
         self._y = y
         self.modified = True
-        self._labeled_mask = np.zeros(y.shape, dtype=bool)
+        # self._labeled_mask = np.zeros(y.shape, dtype=bool)
+        self._labeled_mask = ~np.fromiter((e is None for e in self._y), dtype=bool)
+
         self._update_callback = set()
 
     def __len__(self):
@@ -92,7 +98,7 @@ class Dataset(object):
         -------
         n_samples : int
         """
-        return self.get_labeled_mask().sum()
+        return self._labeled_mask.sum()
 
     def len_unlabeled(self):
         """
@@ -102,7 +108,7 @@ class Dataset(object):
         -------
         n_samples : int
         """
-        return (~self.get_labeled_mask()).sum()
+        return (~self._labeled_mask).sum()
 
     def get_num_of_labels(self):
         """
@@ -112,7 +118,7 @@ class Dataset(object):
         -------
         n_labels : int
         """
-        return np.unique(self._y[self.get_labeled_mask()]).size
+        return np.unique(self._y[self._labeled_mask]).size
 
     def append(self, feature, label=None):
         """
@@ -207,7 +213,7 @@ class Dataset(object):
         X: numpy array or scipy matrix, shape = ( n_sample labeled, n_features )
         y: list, shape = (n_samples lebaled)
         """
-        return self._X[self.get_labeled_mask()], self._y[self.get_labeled_mask()].tolist()
+        return self._X[self._labeled_mask], self._y[self._labeled_mask].tolist()
 
     def get_unlabeled_idx(self):
         """
@@ -218,7 +224,7 @@ class Dataset(object):
         idx: numpy array, shape = (n_samples unlebaled)
         X: numpy array or scipy matrix, shape = ( n_sample unlabeled, n_features )
         """
-        return np.where(~self.get_labeled_mask())[0]
+        return np.where(~self._labeled_mask)[0]
 
     def get_unlabeled_entries(self):
         """
@@ -229,7 +235,7 @@ class Dataset(object):
         idx: numpy array, shape = (n_samples unlebaled)
         X: numpy array or scipy matrix, shape = ( n_sample unlabeled, n_features )
         """
-        return np.where(~self.get_labeled_mask())[0], self._X[~self.get_labeled_mask()]
+        return np.where(~self._labeled_mask)[0], self._X[~self._labeled_mask]
 
     def labeled_uniform_sample(self, sample_size, replace=True):
         """Returns a Dataset object with labeled data only, which is
@@ -240,7 +246,7 @@ class Dataset(object):
         ----------
         sample_size
         """
-        idx = np.random.choice(np.where(self.get_labeled_mask())[0],
+        idx = np.random.choice(np.where(self._labeled_mask)[0],
                                size=sample_size, replace=replace )
         return Dataset(self._X[idx], self._y[idx])
 
