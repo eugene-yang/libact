@@ -51,7 +51,7 @@ class Dataset(object):
                 y = np.array([None]*X.shape[0])
             else:
                 y = np.array(y)
-            assert y.shape[0] == X.shape[0]
+            # assert y.shape[0] == X.shape[0]
 
         self._X = X
         self._y = y
