@@ -35,18 +35,23 @@ class Dataset(object):
 
     """
 
-    def __init__(self, X=None, y=None):
-        if X is None: 
+    def __init__(self, X=None, y=None, size=None):
+        if X is None and y is None:
+            if size is None:
+                raise ValueError('At least need to provide the size of dataset.')
             X = np.array([])
-        elif not isinstance(X, sp.csr_matrix):
-            X = np.array(X)
-
-        if y is None: 
-            y = np.array([None]*X.shape[0])
+            y = np.array([None]*size)
         else:
-            y = np.array(y)
+            if X is None: 
+                X = np.array([])
+            elif not isinstance(X, sp.csr_matrix):
+                X = np.array(X)
 
-        assert y.shape[0] == X.shape[0]
+            if y is None: 
+                y = np.array([None]*X.shape[0])
+            else:
+                y = np.array(y)
+            assert y.shape[0] == X.shape[0]
 
         self._X = X
         self._y = y
