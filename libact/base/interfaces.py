@@ -49,9 +49,20 @@ class QueryStrategy(with_metaclass(ABCMeta, object)):
             The index of the next unlabeled sample to be queried and the score assigned.
         """
         pass
+    
+    def _check_dvalues(self, dvalues):
+        unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
+        if len(dvalues) == len(self.dataset):
+            return dvalues[ unlabeled_entry_ids ]
+        elif len(dvalues) == self.dataset.len_unlabeled():
+            return dvalues
+        else:
+            raise ValueError("The number of scores provided should be either same as the dataset "
+                                "size or the number of unlabeled instances.")
+
 
     @abstractmethod
-    def make_query(self):
+    def make_query(self, dvalue=None):
         """Return the index of the sample to be queried and labeled. Read-only.
 
         No modification to the internal states.
@@ -71,7 +82,7 @@ class BatchQueryStrategy(QueryStrategy):
     next given a pool of labeled and unlabeled data.
     """
     @abstractmethod
-    def make_query(self, n_ask=1):
+    def make_query(self, n_ask=1, dvalues=None):
         """Return the indices of the sample to be queried and labeled. Read-only.
 
         No modification to the internal states.

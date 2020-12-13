@@ -22,22 +22,27 @@ class RelevanceFeedbackSampling(BatchQueryStrategy):
 
         self.model.train(self.dataset)
 
-    def _get_scores(self, retrain=True, *args, **kwargs):
+    def _get_scores(self, dvalue=None retrain=True, *args, **kwargs):
         dataset = self.dataset
-        if retrain:
-            print("=======RETRAIN!!!!======")
-            self.model.train(dataset, *args, **kwargs)
-        unlabeled_entry_ids, X_pool = dataset.get_unlabeled_entries()
-
+        if dvalue is None:
+            if retrain:
+                self.model.train(dataset, *args, **kwargs)
+            unlabeled_entry_ids, X_pool = dataset.get_unlabeled_entries()
+            dvalue = self.model.predict_real(X_pool)
+        else:
+            dvalue = self._check_dvalue(dvalue)
+        
         # pclassidx = np.where( self.model.model.classes_ )[0][0]
         # trust interface would always put positive class at position 1
-        score = self.model.predict_real(X_pool)[ :, 1 ] 
+        score = dvalue[:, 1] 
 
         return unlabeled_entry_ids, score
 
-    def make_query(self, n_ask=1, return_score=False, retrain=False, *args, **kwargs):
-        unlabeled_entry_ids, scores = self._get_scores(retrain=retrain, *args, **kwargs)
-        ask_id = np.argsort(scores)[::-1][ : n_ask ]
+    def make_query(self, n_ask=1, dvalue=None, return_score=False, retrain=False, *args, **kwargs):
+        if scores is None:
+            unlabeled_entry_ids, scores = self._get_scores(dvalue=dvalue, retrain=retrain, *args, **kwargs)
+        
+        ask_id = np.argsort(scores)[::-1][:n_ask]
         if n_ask == 1:
             ask_id = ask_id[0]
 

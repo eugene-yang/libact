@@ -7,11 +7,11 @@ from sklearn.cluster import KMeans
 from scipy.optimize import minimize
 from scipy.stats import multivariate_normal
 
-from libact.base.interfaces import QueryStrategy
+from libact.base.interfaces import QueryStrategy, BatchQueryStrategy
 from libact.utils import inherit_docstring_from, seed_random_state, zip
 
 
-class DWUS(QueryStrategy):
+class DWUS(BatchQueryStrategy):
     """Density Weighted Uncertainty Sampling (DWUS)
 
     We use the KMeans algorithm for clustering instead of the Kmediod for now.
@@ -123,7 +123,7 @@ class DWUS(QueryStrategy):
         self.p_x = np.dot(p_x_k, P_k).reshape(-1)
 
     @inherit_docstring_from(QueryStrategy)
-    def make_query(self):
+    def make_query(self, n_ask=1):
         unlabeled_entry_ids, _ = self.dataset.get_unlabeled_entries()
         labeled_entry_ids = np.array([eid
                                       for eid, x in enumerate(self.dataset.data)
@@ -149,8 +149,9 @@ class DWUS(QueryStrategy):
         expected_error = P_y_x
         expected_error[P_y_x >= 0.5] = 1. - P_y_x[P_y_x >= 0.5]
 
-        ask_id = np.argmax(expected_error * p_x)
-
+        ask_id = np.argsort(expected_error * p_x)[::-1][:n_ask]
+        if n_ask == 1:
+            return unlabeled_entry_ids[ask_id[0]]
         return unlabeled_entry_ids[ask_id]
 
 class DensityWeightedLogisticRegression(object):

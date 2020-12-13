@@ -95,32 +95,35 @@ class UncertaintySampling(BatchQueryStrategy):
                 "method 'entropy' requires model to be a ProbabilisticModel"
             )
 
-    def _get_scores(self, retrain=True, *args, **kwargs):
+    def _get_scores(self, dvalue=None, retrain=True, *args, **kwargs):
         dataset = self.dataset
-        if retrain:
-            self.model.train(dataset, *args, **kwargs)
         unlabeled_entry_ids, X_pool = dataset.get_unlabeled_entries()
 
-        if isinstance(self.model, ProbabilisticModel):
-            dvalue = self.model.predict_proba(X_pool)
-        elif isinstance(self.model, ContinuousModel):
-            dvalue = self.model.predict_real(X_pool)
+        if dvalues is None:
+            if retrain:
+                self.model.train(dataset, *args, **kwargs)
+            if isinstance(self.model, ProbabilisticModel):
+                dvalue = self.model.predict_proba(X_pool)
+            elif isinstance(self.model, ContinuousModel):
+                dvalue = self.model.predict_real(X_pool)
+        else:
+            dvalue = self._check_dvalue(dvalue)
+            
 
         if self.method == 'lc':  # least confident
             score = -np.max(dvalue, axis=1)
-
         elif self.method == 'sm':  # smallest margin
             if np.shape(dvalue)[1] > 2:
                 # Find 2 largest decision values
                 dvalue = -(np.partition(-dvalue, 2, axis=1)[:, :2])
             score = -np.abs(dvalue[:, 0] - dvalue[:, 1])
-
         elif self.method == 'entropy':
             score = np.sum(-dvalue * np.log(dvalue), axis=1)
-        return zip(unlabeled_entry_ids, score)
+        
+        return unlabeled_entry_ids, score
 
 
-    def make_query(self, n_ask=1, return_score=False, retrain=True, *args, **kwargs):
+    def make_query(self, n_ask=1, dvalue=None, return_score=False, retrain=True, *args, **kwargs):
         """Return the index of the sample to be queried and labeled and
         selection score of each sample. Read-only.
 
@@ -143,8 +146,9 @@ class UncertaintySampling(BatchQueryStrategy):
         # dataset = self.dataset
         # unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
 
-        unlabeled_entry_ids, scores = zip(*self._get_scores(retrain=retrain, *args, **kwargs))
+        unlabeled_entry_ids, scores = self._get_scores(dvalue=dvalue, retrain=retrain, *args, **kwargs)
         unlabeled_entry_ids = np.array(unlabeled_entry_ids)
+
         ask_id = np.argsort(scores)[::-1][:n_ask]
         if n_ask == 1:
             ask_id = ask_id[0]
