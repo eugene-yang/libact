@@ -80,7 +80,7 @@ class UncertaintySampling(BatchQueryStrategy):
                 "model has to be a ContinuousModel or ProbabilisticModel"
             )
 
-        self.model.train(self.dataset)
+        # self.model.train(self.dataset)
 
         self.method = kwargs.pop('method', 'lc')
         if self.method not in ['lc', 'sm', 'entropy']:

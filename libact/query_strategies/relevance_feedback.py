@@ -25,7 +25,6 @@ class RelevanceFeedbackSampling(BatchQueryStrategy):
     def _get_scores(self, retrain=True, *args, **kwargs):
         dataset = self.dataset
         if retrain:
-            print("=======RETRAIN!!!!======")
             self.model.train(dataset, *args, **kwargs)
         unlabeled_entry_ids, X_pool = dataset.get_unlabeled_entries()
 
