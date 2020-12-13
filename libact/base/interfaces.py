@@ -50,12 +50,12 @@ class QueryStrategy(with_metaclass(ABCMeta, object)):
         """
         pass
     
-    def _check_dvalues(self, dvalues):
+    def _check_dvalue(self, dvalue):
         unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
-        if len(dvalues) == len(self.dataset):
-            return dvalues[ unlabeled_entry_ids ]
-        elif len(dvalues) == self.dataset.len_unlabeled():
-            return dvalues
+        if len(dvalue) == len(self.dataset):
+            return dvalue[ unlabeled_entry_ids ]
+        elif len(dvalue) == self.dataset.len_unlabeled():
+            return dvalue
         else:
             raise ValueError("The number of scores provided should be either same as the dataset "
                                 "size or the number of unlabeled instances.")
