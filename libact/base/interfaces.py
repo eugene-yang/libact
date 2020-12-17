@@ -51,7 +51,7 @@ class QueryStrategy(with_metaclass(ABCMeta, object)):
         pass
     
     def _check_dvalue(self, dvalue):
-        unlabeled_entry_ids, _ = dataset.get_unlabeled_entries()
+        unlabeled_entry_ids, _ = self.dataset.get_unlabeled_entries()
         if len(dvalue) == len(self.dataset):
             return dvalue[ unlabeled_entry_ids ]
         elif len(dvalue) == self.dataset.len_unlabeled():

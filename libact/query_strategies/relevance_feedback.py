@@ -22,7 +22,7 @@ class RelevanceFeedbackSampling(BatchQueryStrategy):
 
         self.model.train(self.dataset)
 
-    def _get_scores(self, dvalue=None retrain=True, *args, **kwargs):
+    def _get_scores(self, dvalue=None, retrain=True, *args, **kwargs):
         dataset = self.dataset
         if dvalue is None:
             if retrain:
@@ -39,8 +39,7 @@ class RelevanceFeedbackSampling(BatchQueryStrategy):
         return unlabeled_entry_ids, score
 
     def make_query(self, n_ask=1, dvalue=None, return_score=False, retrain=False, *args, **kwargs):
-        if scores is None:
-            unlabeled_entry_ids, scores = self._get_scores(dvalue=dvalue, retrain=retrain, *args, **kwargs)
+        unlabeled_entry_ids, scores = self._get_scores(dvalue=dvalue, retrain=retrain, *args, **kwargs)
         
         ask_id = np.argsort(scores)[::-1][:n_ask]
         if n_ask == 1:
