@@ -20,7 +20,7 @@ class RelevanceFeedbackSampling(BatchQueryStrategy):
                 "model has to be a ContinuousModel or ProbabilisticModel"
             )
 
-        self.model.train(self.dataset)
+        # self.model.train(self.dataset)
 
     def _get_scores(self, dvalue=None, retrain=True, *args, **kwargs):
         dataset = self.dataset
