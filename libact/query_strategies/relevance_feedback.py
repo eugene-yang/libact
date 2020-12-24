@@ -30,7 +30,7 @@ class RelevanceFeedbackSampling(BatchQueryStrategy):
             unlabeled_entry_ids, X_pool = dataset.get_unlabeled_entries()
             dvalue = self.model.predict_real(X_pool)
         else:
-            unlabled_entry_ids = dataset.get_unlabeled_idx()
+            unlabeled_entry_ids = dataset.get_unlabeled_idx()
             dvalue = self._check_dvalue(dvalue)
         
         # pclassidx = np.where( self.model.model.classes_ )[0][0]
